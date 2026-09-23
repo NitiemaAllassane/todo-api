@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// schema.prisma
+
+// ============================================
+// USER — le compte utilisateur (auth JWT)
+// ============================================
+model User {
+  id        String   @id @default(uuid())
+  fullname  String
+  email     String   @unique
+  phone     String   @unique
+  password  String   // hash bcrypt, jamais en clair
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tasks      Task[]
+  categories Category[]
+
+  @@map("users")
+}
+
+// ============================================
+// CATEGORY — regroupe les tâches (ex: "Travail", "Perso")
+// ============================================
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  color     String?  // ex: "#3B82F6", utile pour l'affichage front
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks  Task[]
+
+  @@unique([userId, name]) // un user ne peut pas avoir 2 catégories du même nom
+  @@map("categories")
+}
+
+// ============================================
+// TASK — la tâche elle-même
+// ============================================
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  startDate   DateTime?   
+  dueDate     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@map("tasks")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
