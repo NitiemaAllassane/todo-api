@@ -4,6 +4,7 @@ import { RegisterDto } from './dto/registerDto.js';
 import * as bcrypt from 'bcrypt'
 import { LoginDto } from './dto/loginDto.js';
 import { JwtService } from '@nestjs/jwt';
+import type { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
