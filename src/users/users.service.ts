@@ -53,6 +53,20 @@ export class UsersService {
     return user;
   }
 
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({ 
+      where: { email }, 
+    });
+
+    return user;
+  }
+  
+  async findByPhone(phone: string) {
+    return this.prisma.user.findUnique({
+      where: { phone },
+    });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
     const data = { ...updateUserDto };
