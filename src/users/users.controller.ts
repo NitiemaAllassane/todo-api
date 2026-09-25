@@ -3,11 +3,7 @@ import { UsersService } from './users.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import type { Request } from 'express';
-
-type AuthenticatedRequest = Request & {
-  user: { userId: string; email: string; fullname: string };
-}
+import type { AuthenticatedRequest } from '../types/index.js';
 
 @Controller('users')
 export class UsersController {

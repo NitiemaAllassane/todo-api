@@ -1,26 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
 
 @Injectable()
 export class TasksService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(userId: string, dto: CreateTaskDto) {
+    return this.prisma.task.create({
+      data: {
+        ...dto,
+        startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+        dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
+        userId,
+      },
+      include: { category: true },
+    });
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  async findAll(userId: string) {
+    return this.prisma.task.findMany({
+      where: { userId },
+      include: { category: true },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(userId: string, id: string) {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+      include: { category: true },
+    });
+
+    if (!task || task.userId !== userId) {
+      throw new NotFoundException('Tâche non trouvée');
+    }
+
+    return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(userId: string, id: string, dto: UpdateTaskDto) {
+    await this.findOne(userId, id);
+
+    return this.prisma.task.update({
+      where: { id },
+      data: dto,
+      include: { category: true },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(userId: string, id: string) {
+    await this.findOne(userId, id);
+
+    await this.prisma.task.delete({ where: { id } });
+
+    return { message: 'Tâche supprimée avec succès' };
   }
 }
