@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 import { CorsOptions } from '@nestjs/common/internal';
 
 const corsOptions: CorsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:3001',
   credentials: true,
 };
 

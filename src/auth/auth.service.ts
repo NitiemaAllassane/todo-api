@@ -4,16 +4,16 @@ import { RegisterDto } from './dto/registerDto.js';
 import * as bcrypt from 'bcrypt'
 import { LoginDto } from './dto/loginDto.js';
 import { JwtService } from '@nestjs/jwt';
-import type { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
-    // injection de depandanc
+    // injection de depandances
     constructor(
         private readonly userService: UsersService,
         private readonly jwtService: JwtService,
     ) {}
 
+    
     // * Logique d'inscription
     async register(registerDto: RegisterDto) {
         const existingEmail = await this.userService.findByEmail(registerDto.email);
@@ -22,10 +22,16 @@ export class AuthService {
         const existingPhone = await this.userService.findByPhone(registerDto.phone);
         if (existingPhone) throw new ConflictException(`Le numéro ${registerDto.phone} est déjà utilisé`);
 
+        const loginDto: LoginDto = {
+            email: registerDto.email,
+            password: registerDto.password
+        }
 
-        return this.userService.create(registerDto)
+        await this.userService.create(registerDto);
+        return this.login(loginDto)
     }
 
+    
     // *Logique de connexion
     async login(loginDto: LoginDto) {
         const errorMessage = `Identifiants invalides`;
