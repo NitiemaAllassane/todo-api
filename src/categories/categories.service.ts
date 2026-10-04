@@ -19,10 +19,22 @@ export class CategoriesService {
   }
 
   async findAll(userId: string) {
-    return this.prisma.category.findMany({
+    const categories = await this.prisma.category.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        _count: {
+          select: { tasks: true },
+        },
+      },
     });
+
+    
+    return categories.map((category) => ({
+      ...category,
+      taskCount: category._count.tasks,
+      _count: undefined,
+    }));
   }
 
   async findOne(userId: string, id: string) {

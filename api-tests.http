@@ -1,0 +1,49 @@
+@baseUrl = http://localhost:3000
+
+### Inscription
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fullname": "John Doe",
+  "email": "john@example.com",
+  "phone": "0708091011",
+  "password": "motdepasse123"
+}
+
+### Connexion
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "motdepasse123"
+}
+
+### Récupérer le profil (teste le cookie automatiquement)
+GET {{baseUrl}}/users/me
+
+### Créer une catégorie
+POST {{baseUrl}}/categories
+Content-Type: application/json
+
+{
+  "name": "Travail"
+}
+
+### Lister les catégories
+GET {{baseUrl}}/categories
+
+### Créer une tâche
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Préparer la présentation client",
+  "priority": "HIGH",
+  "status": "TODO"
+}
+
+### Lister les tâches
+GET {{baseUrl}}/tasks

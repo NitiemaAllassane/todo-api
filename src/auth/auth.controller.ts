@@ -9,8 +9,18 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('register')
-    register(@Body() registerDto: RegisterDto) {
-        return this.authService.register(registerDto);
+    async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+        const { access_token } = await this.authService.register(registerDto);
+
+        res.cookie('access_token', access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
+        return { message: 'Inscription réussie' };
     }
 
     @Post('login')
@@ -22,6 +32,7 @@ export class AuthController {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 24 * 60 * 60 * 1000,
+            path: '/'
         });
 
         return { message: 'Connexion réussie' };

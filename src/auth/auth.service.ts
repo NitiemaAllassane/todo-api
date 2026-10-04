@@ -34,7 +34,7 @@ export class AuthService {
     
     // *Logique de connexion
     async login(loginDto: LoginDto) {
-        const errorMessage = `Identifiants invalides`;
+        const errorMessage = `Desolé ! nous trouve pas de compte avec ces informations.`;
 
         const user = await this.userService.findByEmail(loginDto.email);
         if (!user) throw new UnauthorizedException(errorMessage);
