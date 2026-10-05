@@ -23,6 +23,7 @@ model User {
 
   tasks      Task[]
   categories Category[]
+  schedules Schedule[] 
 
   @@map("users")
 }
@@ -81,4 +82,17 @@ enum TaskPriority {
   LOW
   MEDIUM
   HIGH
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  title     String
+  time      String
+  tag       String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
 }
