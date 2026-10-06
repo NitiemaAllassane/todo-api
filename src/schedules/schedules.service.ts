@@ -20,7 +20,7 @@ export class SchedulesService {
   async findAll(userId: string) {
     return this.prisma.schedule.findMany({ 
       where: { userId },
-      orderBy: { time: "desc" }
+      orderBy: { time: "asc" }
     });
   }
 
